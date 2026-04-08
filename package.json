@@ -69,7 +69,7 @@
     "dodopayments": "^1.53.2",
     "dotenv": "^16.4.7",
     "dotted-map": "^2.2.3",
-    "drizzle-orm": "^0.38.4",
+    "drizzle-orm": "^0.45.2",
     "embla-carousel-auto-scroll": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "fumadocs-core": "^16.4.11",
