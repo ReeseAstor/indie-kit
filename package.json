@@ -75,7 +75,7 @@
     "fumadocs-core": "^16.4.11",
     "fumadocs-mdx": "^14.2.6",
     "fumadocs-ui": "^16.4.11",
-    "inngest": "^3.50.0",
+    "inngest": "^3.54.0",
     "input-otp": "^1.4.2",
     "iron-session": "^8.0.4",
     "jose": "^6.0.10",
