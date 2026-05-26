@@ -132,7 +132,7 @@
     "eslint-config-next": "16.1.6",
     "inngest-cli": "1.5.6",
     "openai": "^6.9.1",
-    "postcss": "^8.5.3",
+    "postcss": "^8.5.10",
     "postcss-load-config": "^6.0.1",
     "prettier": "^3.3.3",
     "react-email": "^5.2.5",
