@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -9,24 +11,26 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { FaSpinner } from "react-icons/fa";
 import { toast } from "sonner";
-import { signUpRequestSchema, type SignUpRequestInput } from "@/lib/validations/auth.schema";
+import { signUpSchema, type SignUpInput } from "@/lib/validations/auth.schema";
 
 export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignUpRequestInput>({
-    resolver: zodResolver(signUpRequestSchema),
+  } = useForm<SignUpInput>({
+    resolver: zodResolver(signUpSchema),
   });
 
-  const onSubmit = async (data: SignUpRequestInput) => {
+  const onSubmit = async (data: SignUpInput) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/auth/signup-request", {
+      const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,11 +41,25 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLDiv
       const result = await response.json();
 
       if (!response.ok) {
-        toast.error(result.error || "Failed to send signup email");
+        toast.error(result.error || "Failed to create account");
         return;
       }
 
-      toast.success("Check your email to complete account setup!");
+      // Account created — sign the user in immediately.
+      const signInResult = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+        callbackUrl: searchParams?.get("callbackUrl") || "/app",
+      });
+
+      if (signInResult?.error) {
+        toast.success("Account created! Please sign in.");
+        router.push("/sign-in");
+      } else if (signInResult?.url) {
+        toast.success("Account created successfully!");
+        router.push(signInResult.url);
+      }
     } catch (error) {
       console.error("Signup error:", error);
       toast.error("Something went wrong");
@@ -87,12 +105,45 @@ export function SignUpForm({ className, ...props }: React.HTMLAttributes<HTMLDiv
           )}
         </div>
 
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            placeholder="At least 8 characters"
+            type="password"
+            autoComplete="new-password"
+            disabled={isLoading}
+            {...register("password")}
+            className="w-full py-6"
+          />
+          {errors.password && (
+            <p className="text-sm text-destructive">{errors.password.message}</p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="confirmPassword">Confirm password</Label>
+          <Input
+            id="confirmPassword"
+            placeholder="Re-enter your password"
+            type="password"
+            autoComplete="new-password"
+            disabled={isLoading}
+            {...register("confirmPassword")}
+            className="w-full py-6"
+          />
+          {errors.confirmPassword && (
+            <p className="text-sm text-destructive">
+              {errors.confirmPassword.message}
+            </p>
+          )}
+        </div>
+
         <Button type="submit" disabled={isLoading} className="w-full py-6">
           {isLoading && <FaSpinner className="mr-2 h-4 w-4 animate-spin" />}
-          Continue
+          Create account
         </Button>
       </form>
     </div>
   );
 }
-

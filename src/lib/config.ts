@@ -15,7 +15,8 @@ export const appConfig: AppConfigPublic = {
   description:
     "Indie Kit is a NextJS starter kit for building your own SaaS in hours.",
   auth: {
-    enablePasswordAuth: false, // Set to true to enable password-based authentication
+    enablePasswordAuth: true, // Set to true to enable password-based authentication
+    enableGoogleAuth: false, // Set to true once GOOGLE_CLIENT_ID/SECRET are configured
   },
   legal: {
     address: {

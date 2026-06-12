@@ -89,7 +89,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   callbacks: {
     async signIn() {
-      return process.env.NEXT_PUBLIC_SIGNIN_ENABLED === "true";
+      // Sign-in is enabled by default. Set NEXT_PUBLIC_SIGNIN_ENABLED="false"
+      // explicitly to disable all sign-ins (kill switch).
+      return process.env.NEXT_PUBLIC_SIGNIN_ENABLED !== "false";
     },
     async session({ session, token }) {
       if (token.sub) {
@@ -123,11 +125,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      allowDangerousEmailAccountLinking: true,
-    }),
+    ...(appConfig.auth?.enableGoogleAuth &&
+    process.env.GOOGLE_CLIENT_ID &&
+    process.env.GOOGLE_CLIENT_SECRET
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            allowDangerousEmailAccountLinking: true,
+          }),
+        ]
+      : []),
     emailProvider,
     // Password-based authentication
     ...(appConfig.auth?.enablePasswordAuth

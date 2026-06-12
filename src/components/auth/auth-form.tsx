@@ -25,6 +25,7 @@ export function AuthForm({ className, callbackUrl, ...props }: AuthFormProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const showPasswordAuth = appConfig.auth?.enablePasswordAuth;
+  const showGoogleAuth = appConfig.auth?.enableGoogleAuth;
 
   const {
     register,
@@ -130,31 +131,35 @@ export function AuthForm({ className, callbackUrl, ...props }: AuthFormProps) {
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Button
-        variant="outline"
-        type="button"
-        disabled={isLoading}
-        onClick={handleGoogleSignIn}
-        className="w-full py-6"
-      >
-        {isLoading ? (
-          <FaSpinner className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <FaGoogle className="mr-2 h-4 w-4" />
-        )}
-        Continue with Google
-      </Button>
+      {showGoogleAuth && (
+        <>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={isLoading}
+            onClick={handleGoogleSignIn}
+            className="w-full py-6"
+          >
+            {isLoading ? (
+              <FaSpinner className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <FaGoogle className="mr-2 h-4 w-4" />
+            )}
+            Continue with Google
+          </Button>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or continue with {showPasswordAuth ? "password" : "email"}
-          </span>
-        </div>
-      </div>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with {showPasswordAuth ? "password" : "email"}
+              </span>
+            </div>
+          </div>
+        </>
+      )}
 
       {showPasswordAuth ? (
         <form onSubmit={handleSubmit(handlePasswordSignIn)} className="flex flex-col gap-4">

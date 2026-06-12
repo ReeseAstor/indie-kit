@@ -5,6 +5,7 @@ export interface AppConfigPublic {
   keywords: string[];
   auth: {
     enablePasswordAuth?: boolean;
+    enableGoogleAuth?: boolean;
   };
   legal: {
     address: {
