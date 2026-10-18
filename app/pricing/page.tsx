@@ -1,1 +1,0 @@
-// Full pricing page code
